@@ -1,11 +1,11 @@
-# Using rsynch with ssh
+# Using rsync to sych your local and remote folders
 
 Suppose you have a server that you can access using ssh, for example I
-have a server named `clio` and my username on that server is
+have a server named `server` and my username on that server is
 `henriknf`. I can connect to this server using the command
 
 ```shell
-ssh henriknf@clio
+ssh henriknf@server
 ```
 
 ## How can I synch a folder on my server with a folder on my local computer?
@@ -20,13 +20,13 @@ is located at `/home/henriknf/local/sandbox/rsync_server`.
 Of course it is possible to copy all the files from the server to the
 local machine using `scp` (securecopy) using the command
 ```shell
-scp -r henriknf@clio:/home/henriknf/local/sandbox/rsync_server/ /Users/finsberg/local/sandbox/rsynch/rsync_local/
+scp -r henriknf@server:/home/henriknf/local/sandbox/rsync_server/ /Users/finsberg/local/sandbox/rsynch/rsync_local/
 ```
 The 
 Similarly, I can copy stuff from my local machnine to the server by
 just swithing the roles
 ```shell
-scp -r /Users/finsberg/local/sandbox/rsynch/rsync_local/ henriknf@clio:/home/henriknf/local/sandbox/rsync_server/
+scp -r /Users/finsberg/local/sandbox/rsynch/rsync_local/ henriknf@server:/home/henriknf/local/sandbox/rsync_server/
 ```
 However, the problem with `scp` is that is only reads the source file(s)
 and writes it to the destination. This means that if you have two
@@ -39,7 +39,7 @@ that you only [copy the
 difference](https://rsync.samba.org/tech_report/).
 In its simplest for you can use almost the same command as before.
 ```shell
-rsync -avzhe ssh henriknf@clio:/home/henriknf/local/sandbox/rsync_server/ /Users/finsberg/local/sandbox/rsync/rsync_local/
+rsync -avzhe ssh henriknf@server:/home/henriknf/local/sandbox/rsync_server/ /Users/finsberg/local/sandbox/rsync/rsync_local/
 ```
 This will make sure that your `rsync_local` is up to data with
 `rsync_server`, but not the other way around. This is because you
@@ -49,7 +49,7 @@ that is the correct one.
 If you want to synch your server folder (`rsync_server`) with new
 content on `rsync_local` you just need to swictc the order:
 ```shell
-rsync -avzhe ssh /Users/finsberg/local/sandbox/rsync/rsync_local/ henriknf@clio:/home/henriknf/local/sandbox/rsync_server/
+rsync -avzhe ssh /Users/finsberg/local/sandbox/rsync/rsync_local/ henriknf@server:/home/henriknf/local/sandbox/rsync_server/
 ```
 
 **Note that you need the "/" at the end of the path in order not to copy
@@ -64,8 +64,8 @@ a file called `synch.sh` and put the following lines in it,
 ```bash
 #!/bin/bash
 OPTIONS="-avzhe ssh"
-rsync $OPTIONS "henriknf@clio:/home/henriknf/local/sandbox/rsync_server/" "/Users/finsberg/local/sandbox/rsync/rsync_local/"
-rsync $OPTIONS "/Users/finsberg/local/sandbox/rsync/rsync_local/" "henriknf@clio:/home/henriknf/local/sandbox/rsync_server/"
+rsync $OPTIONS "henriknf@server:/home/henriknf/local/sandbox/rsync_server/" "/Users/finsberg/local/sandbox/rsync/rsync_local/"
+rsync $OPTIONS "/Users/finsberg/local/sandbox/rsync/rsync_local/" "henriknf@server:/home/henriknf/local/sandbox/rsync_server/"
 ```
 **Make sure to change the paths to your own paths!**
 Then make the file executable
@@ -94,11 +94,11 @@ pip install watch-rsync
 
 Then you can simply run the command
 ```
-watch-rsych /Users/finsberg/local/sandbox/rsync/rsync_local/ henriknf@clio:/home/henriknf/local/sandbox/rsync_server/
+watch-rsych /Users/finsberg/local/sandbox/rsync/rsync_local/ henriknf@server:/home/henriknf/local/sandbox/rsync_server/
 ```
 to sync to the server and 
 ```
-watch-rsych henriknf@clio:/home/henriknf/local/sandbox/rsync_server/ /Users/finsberg/local/sandbox/rsync/rsync_local/
+watch-rsych henriknf@server:/home/henriknf/local/sandbox/rsync_server/ /Users/finsberg/local/sandbox/rsync/rsync_local/
 ```
 to sync to your local machine.
 And if you want it to run in the background, add a `&` at the end of
