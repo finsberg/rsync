@@ -1,4 +1,4 @@
-# Using rsync to sych your local and remote folders
+# Using rsync to sync your local and remote folders
 
 Suppose you have a server that you can access using ssh, for example I
 have a server named `server` and my username on that server is
@@ -8,30 +8,29 @@ have a server named `server` and my username on that server is
 ssh henriknf@server
 ```
 
-## How can I synch a folder on my server with a folder on my local computer?
+## How can I sync a folder on my server with a folder on my local computer?
 
 Say you have a folder on your local machine that you want to keep up
 to date to a folder you have on your server.
 
-I suppose the folder on my local machin is loacted at
+I suppose the folder on my local machine is located at
 `/Users/finsberg/local/sandbox/rsync/rsync_local` while the folder on the server
 is located at `/home/henriknf/local/sandbox/rsync_server`.
 
 Of course it is possible to copy all the files from the server to the
 local machine using `scp` (securecopy) using the command
 ```shell
-scp -r henriknf@server:/home/henriknf/local/sandbox/rsync_server/ /Users/finsberg/local/sandbox/rsynch/rsync_local/
+scp -r henriknf@server:/home/henriknf/local/sandbox/rsync_server/ /Users/finsberg/local/sandbox/rsync/rsync_local/
 ```
-The 
-Similarly, I can copy stuff from my local machnine to the server by
-just swithing the roles
+The
+Similarly, I can copy stuff from my local machine to the server by
+just switching the roles
 ```shell
-scp -r /Users/finsberg/local/sandbox/rsynch/rsync_local/ henriknf@server:/home/henriknf/local/sandbox/rsync_server/
+scp -r /Users/finsberg/local/sandbox/rsync/rsync_local/ henriknf@server:/home/henriknf/local/sandbox/rsync_server/
 ```
 However, the problem with `scp` is that is only reads the source file(s)
-and writes it to the destination. This means that if you have two
-differnt versions of the file then one will be completely overwritten.
-Also, everytime you copy something, you will have to copy everything. 
+and writes it to the destination. This means that every time you copy
+something, you will have to copy everything.
 And if your copy is interrupted you need to start it all over again.
 
 `rsync` is much smarter. `rsync` performs a lot of optimization so
@@ -44,10 +43,10 @@ rsync -avzhe ssh henriknf@server:/home/henriknf/local/sandbox/rsync_server/ /Use
 This will make sure that your `rsync_local` is up to data with
 `rsync_server`, but not the other way around. This is because you
 might have conflict and therefore it has to make a choice with version
-that is the correct one. 
+that is the correct one.
 
-If you want to synch your server folder (`rsync_server`) with new
-content on `rsync_local` you just need to swictc the order:
+If you want to sync your server folder (`rsync_server`) with new
+content on `rsync_local` you just need to switch the order:
 ```shell
 rsync -avzhe ssh /Users/finsberg/local/sandbox/rsync/rsync_local/ henriknf@server:/home/henriknf/local/sandbox/rsync_server/
 ```
@@ -59,8 +58,8 @@ the whole folder inside the other**
 ## How can I automate this processs?
 
 First of all, if the directory don't change you can put the commands
-for synching file to and from the server in a bash script, e.g create
-a file called `synch.sh` and put the following lines in it, 
+for syncing file to and from the server in a bash script, e.g create
+a file called `sync.sh` and put the following lines in it,
 ```bash
 #!/bin/bash
 OPTIONS="-avzhe ssh"
@@ -70,22 +69,22 @@ rsync $OPTIONS "/Users/finsberg/local/sandbox/rsync/rsync_local/" "henriknf@serv
 **Make sure to change the paths to your own paths!**
 Then make the file executable
 ```shell
-chmod +x synch.sh
+chmod +x sync.sh
 ```
 Right now you can run the command
 ```
-./synch.sh
+./sync.sh
 ```
-whenever you want to synch the files. 
+whenever you want to sync the files.
 
-## Can I make rsych synch automatically when I perform changes?
+## Can I make rsync sync automatically when I perform changes?
 
 If you want something similar to
-dropbox, which watches your folder and synch whenerver it detect a
+dropbox, which watches your folder and sync whenever it detect a
 change, there are ways of doing that. The simplest way I found is to
 install a python package called `watch-rsync` which uses a library
 called [`watchdog`](https://pythonhosted.org/watchdog/) and works on
-most platforms. Install it using 
+most platforms. Install it using
 ```
 pip install watch-rsync
 ```
@@ -96,7 +95,7 @@ Then you can simply run the command
 ```
 watch-rsych /Users/finsberg/local/sandbox/rsync/rsync_local/ henriknf@server:/home/henriknf/local/sandbox/rsync_server/
 ```
-to sync to the server and 
+to sync to the server and
 ```
 watch-rsych henriknf@server:/home/henriknf/local/sandbox/rsync_server/ /Users/finsberg/local/sandbox/rsync/rsync_local/
 ```
